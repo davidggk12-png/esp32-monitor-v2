@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ESP32 BLE Monitor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #0D0F14; --bg2: #141720; --panel: #1A1D26;
+            --accent-temp: #FF6B35; --accent-pres: #00C2FF;
+            --accent-ok: #00FF9F; --accent-err: #FF3860; --text: #E8EAF0;
+        }
+        * { box-sizing: border-box; }
+        body {
+            background-color: var(--bg); color: var(--text);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0; padding: 16px;
+            max-width: 500px; margin: 0 auto;
+        }
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 12px;
+            border-bottom: 1px solid #2A2F3F;
+        }
+        .status-badge {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--panel); padding: 6px 12px;
+            border-radius: 20px; border: 1px solid #2A2F3F;
+        }
+        .status-dot {
+            width: 10px; height: 10px;
+            background: var(--accent-err); border-radius: 50%; flex-shrink: 0;
+        }
+        .status-dot.connected { background: var(--accent-ok); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        #status-text { font-size: 0.75rem; }
+        .card-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .card { background: var(--panel); padding: 16px 10px; border-radius: 10px; border: 1px solid #2A2F3F; text-align: center; }
+        .card-label { font-size: 0.65rem; color: #8890A8; letter-spacing: 0.05em; display: block; margin-bottom: 6px; }
+        .val { font-size: 2rem; font-weight: bold; display: block; line-height: 1.1; }
+        .unit { font-size: 0.9rem; }
+        .temp { color: var(--accent-temp); } .pres { color: var(--accent-pres); }
+        .btn {
+            background: var(--bg2); border: 1px solid #2A2F3F;
+            color: var(--accent-ok); padding: 14px 12px;
+            width: 100%; border-radius: 8px; cursor: pointer;
+            font-weight: bold; font-family: 'Courier New', monospace;
+            font-size: 0.9rem; letter-spacing: 0.05em;
+            margin-bottom: 12px; transition: background 0.15s;
+            -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+        }
+        .btn:active { background: #1E2235; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .chart-wrapper { background: var(--bg2); border-radius: 10px; padding: 12px; margin-bottom: 16px; border: 1px solid #2A2F3F; }
+        .control-group { background: var(--panel); padding: 16px; border-radius: 10px; border: 1px solid #2A2F3F; }
+        .control-label { font-size: 0.7rem; color: #8890A8; letter-spacing: 0.05em; display: block; margin-bottom: 12px; }
+        .servo-row { display: flex; align-items: center; gap: 10px; }
+        .servo-input { background: #1C2030; border: 1px solid #2A2F3F; color: white; padding: 10px; width: 70px; text-align: center; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 1rem; flex-shrink: 0; }
+        .servo-slider { flex: 1; -webkit-appearance: none; height: 4px; background: #2A2F3F; border-radius: 2px; outline: none; }
+        .servo-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-ok); cursor: pointer; }
+        .send-btn { background: var(--bg2); border: 1px solid var(--accent-ok); color: var(--accent-ok); padding: 10px 16px; border-radius: 8px; cursor: pointer; font-family: 'Courier New', monospace; font-weight: bold; font-size: 0.85rem; touch-action: manipulation; flex-shrink: 0; }
+        .ble-warning { background: #1A1200; border: 1px solid #3D2E00; color: #FFB347; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; font-size: 0.75rem; line-height: 1.6; display: none; }
+        .ble-warning.show { display: block; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div style="font-size: 1.1rem; font-weight: bold; color: var(--accent-pres);">ESP32 MONITOR</div>
+    <div class="status-badge">
+        <div id="dot" class="status-dot"></div>
+        <span id="status-text" style="color: var(--accent-err);">DESCONECTADO</span>
+    </div>
+</div>
+
+<div id="ble-warning" class="ble-warning">
+    ⚠ Tu navegador no soporta Web Bluetooth. Usa <strong>Chrome para Android</strong>.
+</div>
+
+<button id="connectBtn" class="btn">CONECTAR ESP32</button>
+
+<div class="card-container">
+    <div class="card">
+        <span class="card-label">TEMPERATURA</span>
+        <span id="temp-val" class="val temp">—</span>
+        <span class="unit temp">°C</span>
+    </div>
+    <div class="card">
+        <span class="card-label">PRESIÓN</span>
+        <span id="pres-val" class="val pres">—</span>
+        <span class="unit pres">hPa</span>
+    </div>
+</div>
+
+<div class="chart-wrapper">
+    <canvas id="chart" height="140"></canvas>
+</div>
+
+<div class="control-group">
+    <span class="control-label">ÁNGULO SERVO (0 – 180°)</span>
+    <div class="servo-row">
+        <input type="number" id="servoAngle" class="servo-input" value="90" min="0" max="180">
+        <input type="range" id="servoSlider" class="servo-slider" value="90" min="0" max="180">
+        <button id="sendBtn" class="send-btn">ENVIAR</button>
+    </div>
+</div>
+
+<script>
+    // Busca por UUID del servicio en lugar de nombre — más confiable en Android
+    const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+    const RX_UUID      = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+    const TX_UUID      = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+
+    let characteristicRX = null;
+    let connected = false;
+
+    if (!navigator.bluetooth) {
+        document.getElementById('ble-warning').classList.add('show');
+        document.getElementById('connectBtn').disabled = true;
+    }
+
+    const ctx = document.getElementById('chart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array(20).fill(''),
+            datasets: [
+                { label: 'Temp (°C)', borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,0.08)', data: [], tension: 0.4, borderWidth: 2, pointRadius: 0, fill: true },
+                { label: 'Pres (hPa)', borderColor: '#00C2FF', backgroundColor: 'rgba(0,194,255,0.06)', data: [], tension: 0.4, borderWidth: 2, pointRadius: 0, fill: true }
+            ]
+        },
+        options: {
+            responsive: true,
+            animation: { duration: 200 },
+            scales: {
+                y: { grid: { color: '#1E2235' }, ticks: { color: '#8890A8', font: { size: 10 } } },
+                x: { display: false }
+            },
+            plugins: { legend: { labels: { color: '#E8EAF0', font: { size: 11 } } } }
+        }
+    });
+
+    const servoAngle  = document.getElementById('servoAngle');
+    const servoSlider = document.getElementById('servoSlider');
+    servoSlider.addEventListener('input', () => { servoAngle.value = servoSlider.value; });
+    servoAngle.addEventListener('input', () => {
+        let v = Math.min(180, Math.max(0, parseInt(servoAngle.value) || 0));
+        servoSlider.value = v;
+    });
+
+    function setStatus(text, color, dotOn) {
+        document.getElementById('status-text').innerText = text;
+        document.getElementById('status-text').style.color = color;
+        const dot = document.getElementById('dot');
+        dot.style.background = color;
+        dotOn ? dot.classList.add('connected') : dot.classList.remove('connected');
+    }
+
+    async function connect() {
+        if (connected) return;
+        const btn = document.getElementById('connectBtn');
+        btn.textContent = 'BUSCANDO...';
+        btn.disabled = true;
+
+        try {
+            // Filtra por UUID del servicio — no por nombre
+            const device = await navigator.bluetooth.requestDevice({
+                filters: [{ services: [SERVICE_UUID] }]
+            });
+
+            btn.textContent = 'CONECTANDO...';
+            device.addEventListener('gattserverdisconnected', onDisconnected);
+
+            const server  = await device.gatt.connect();
+            const service = await server.getPrimaryService(SERVICE_UUID);
+            characteristicRX = await service.getCharacteristic(RX_UUID);
+            const characteristicTX = await service.getCharacteristic(TX_UUID);
+
+            await characteristicTX.startNotifications();
+            characteristicTX.addEventListener('characteristicvaluechanged', handleNotifications);
+
+            connected = true;
+            setStatus('CONECTADO', '#00FF9F', true);
+            btn.textContent = 'CONECTADO ✓';
+            btn.style.color = '#00FF9F';
+
+        } catch (error) {
+            console.error("Fallo conexión:", error);
+            setStatus('ERROR', '#FF3860', false);
+            btn.textContent = 'REINTENTAR';
+            btn.disabled = false;
+        }
+    }
+
+    function onDisconnected() {
+        connected = false;
+        characteristicRX = null;
+        setStatus('DESCONECTADO', '#FF3860', false);
+        const btn = document.getElementById('connectBtn');
+        btn.textContent = 'RECONECTAR';
+        btn.style.color = '#00FF9F';
+        btn.disabled = false;
+    }
+
+    function handleNotifications(event) {
+        const value = new TextDecoder().decode(event.target.value);
+        try {
+            const data = JSON.parse(value);
+            if (data.t !== undefined && data.p !== undefined) {
+                document.getElementById('temp-val').innerText = data.t.toFixed(1);
+                document.getElementById('pres-val').innerText = (data.p / 100).toFixed(2);
+                chart.data.datasets[0].data.push(data.t);
+                chart.data.datasets[1].data.push(data.p / 100);
+                if (chart.data.datasets[0].data.length > 20) {
+                    chart.data.datasets[0].data.shift();
+                    chart.data.datasets[1].data.shift();
+                }
+                chart.update();
+            }
+        } catch (e) {}
+    }
+
+    async function sendAngle() {
+        if (!characteristicRX) return;
+        const angle = Math.min(180, Math.max(0, parseInt(servoAngle.value) || 0));
+        servoAngle.value = angle;
+        servoSlider.value = angle;
+        await characteristicRX.writeValue(new TextEncoder().encode("ANGLE:" + angle));
+    }
+
+    document.getElementById('connectBtn').addEventListener('click', connect);
+    document.getElementById('sendBtn').addEventListener('click', sendAngle);
+</script>
+</body>
+</html>
