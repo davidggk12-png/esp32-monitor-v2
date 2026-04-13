@@ -12,54 +12,45 @@
             --accent-ok: #00FF9F; --accent-err: #FF3860; --text: #E8EAF0;
         }
         * { box-sizing: border-box; }
-        body {
-            background-color: var(--bg); color: var(--text);
-            font-family: 'Courier New', Courier, monospace;
-            margin: 0; padding: 16px;
-            max-width: 500px; margin: 0 auto;
-        }
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; padding-bottom: 12px;
-            border-bottom: 1px solid #2A2F3F;
-        }
-        .status-badge {
-            display: flex; align-items: center; gap: 8px;
-            background: var(--panel); padding: 6px 12px;
-            border-radius: 20px; border: 1px solid #2A2F3F;
-        }
-        .status-dot {
-            width: 10px; height: 10px;
-            background: var(--accent-err); border-radius: 50%; flex-shrink: 0;
-        }
+        body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; padding: 16px; max-width: 500px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #2A2F3F; }
+        .status-badge { display: flex; align-items: center; gap: 8px; background: var(--panel); padding: 6px 12px; border-radius: 20px; border: 1px solid #2A2F3F; }
+        .status-dot { width: 10px; height: 10px; background: var(--accent-err); border-radius: 50%; flex-shrink: 0; }
         .status-dot.connected { background: var(--accent-ok); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
         #status-text { font-size: 0.75rem; }
         .card-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
         .card { background: var(--panel); padding: 16px 10px; border-radius: 10px; border: 1px solid #2A2F3F; text-align: center; }
-        .card-label { font-size: 0.65rem; color: #8890A8; letter-spacing: 0.05em; display: block; margin-bottom: 6px; }
+        .card-label { font-size: 0.65rem; color: #8890A8; letter-spacing: .05em; display: block; margin-bottom: 6px; }
         .val { font-size: 2rem; font-weight: bold; display: block; line-height: 1.1; }
         .unit { font-size: 0.9rem; }
         .temp { color: var(--accent-temp); } .pres { color: var(--accent-pres); }
-        .btn {
-            background: var(--bg2); border: 1px solid #2A2F3F;
-            color: var(--accent-ok); padding: 14px 12px;
-            width: 100%; border-radius: 8px; cursor: pointer;
-            font-weight: bold; font-family: 'Courier New', monospace;
-            font-size: 0.9rem; letter-spacing: 0.05em;
-            margin-bottom: 12px; transition: background 0.15s;
-            -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-        }
+        .btn { background: var(--bg2); border: 1px solid #2A2F3F; color: var(--accent-ok); padding: 14px 12px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Courier New', monospace; font-size: 0.9rem; letter-spacing: .05em; margin-bottom: 12px; transition: background .15s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
         .btn:active { background: #1E2235; }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn:disabled { opacity: .4; cursor: not-allowed; }
         .chart-wrapper { background: var(--bg2); border-radius: 10px; padding: 12px; margin-bottom: 16px; border: 1px solid #2A2F3F; }
-        .control-group { background: var(--panel); padding: 16px; border-radius: 10px; border: 1px solid #2A2F3F; }
-        .control-label { font-size: 0.7rem; color: #8890A8; letter-spacing: 0.05em; display: block; margin-bottom: 12px; }
+        .section { background: var(--panel); padding: 16px; border-radius: 10px; border: 1px solid #2A2F3F; margin-bottom: 12px; }
+        .section-label { font-size: 0.7rem; color: #8890A8; letter-spacing: .05em; display: block; margin-bottom: 12px; }
         .servo-row { display: flex; align-items: center; gap: 10px; }
         .servo-input { background: #1C2030; border: 1px solid #2A2F3F; color: white; padding: 10px; width: 70px; text-align: center; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 1rem; flex-shrink: 0; }
         .servo-slider { flex: 1; -webkit-appearance: none; height: 4px; background: #2A2F3F; border-radius: 2px; outline: none; }
         .servo-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-ok); cursor: pointer; }
         .send-btn { background: var(--bg2); border: 1px solid var(--accent-ok); color: var(--accent-ok); padding: 10px 16px; border-radius: 8px; cursor: pointer; font-family: 'Courier New', monospace; font-weight: bold; font-size: 0.85rem; touch-action: manipulation; flex-shrink: 0; }
+
+        .col-labels { display: grid; grid-template-columns: 22px 1fr 72px 72px 32px; gap: 6px; margin-bottom: 4px; }
+        .col-label { font-size: 0.6rem; color: #8890A8; text-align: center; }
+        .step-row { display: grid; grid-template-columns: 22px 1fr 72px 72px 32px; gap: 6px; align-items: center; margin-bottom: 6px; padding: 6px; border-radius: 6px; border: 1px solid transparent; transition: border-color .2s, background .2s; }
+        .step-row.active { background: #1C2A20; border-color: var(--accent-ok); }
+        .step-num { font-size: 0.7rem; color: #8890A8; text-align: center; }
+        .step-input { background: #1C2030; border: 1px solid #2A2F3F; color: white; padding: 6px 4px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 0.85rem; width: 100%; text-align: center; }
+        .del-btn { background: none; border: 1px solid #3A2030; color: var(--accent-err); border-radius: 6px; cursor: pointer; font-size: 0.75rem; width: 32px; height: 32px; touch-action: manipulation; }
+        .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+        .btn-small { background: var(--bg2); border: 1px solid #2A2F3F; color: var(--accent-ok); padding: 10px; border-radius: 8px; cursor: pointer; font-family: 'Courier New', monospace; font-weight: bold; font-size: 0.8rem; flex: 1; touch-action: manipulation; }
+        .btn-stop { color: var(--accent-err); border-color: #3A2030; }
+        .btn-add { color: var(--accent-pres); border-color: #1A2A3F; flex: none; padding: 10px 14px; }
+        .progress-wrap { margin-top: 12px; background: #141720; border-radius: 6px; height: 6px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--accent-ok); width: 0%; transition: width .3s; }
+        .seq-status { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.7rem; color: #8890A8; min-height: 16px; }
         .ble-warning { background: #1A1200; border: 1px solid #3D2E00; color: #FFB347; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; font-size: 0.75rem; line-height: 1.6; display: none; }
         .ble-warning.show { display: block; }
     </style>
@@ -67,15 +58,15 @@
 <body>
 
 <div class="header">
-    <div style="font-size: 1.1rem; font-weight: bold; color: var(--accent-pres);">ESP32 MONITOR</div>
+    <div style="font-size:1.1rem;font-weight:bold;color:var(--accent-pres)">ESP32 MONITOR</div>
     <div class="status-badge">
         <div id="dot" class="status-dot"></div>
-        <span id="status-text" style="color: var(--accent-err);">DESCONECTADO</span>
+        <span id="status-text" style="color:var(--accent-err)">DESCONECTADO</span>
     </div>
 </div>
 
 <div id="ble-warning" class="ble-warning">
-    ⚠ Tu navegador no soporta Web Bluetooth. Usa <strong>Chrome para Android</strong>.
+    ⚠ Usa <strong>Chrome para Android</strong>. Safari y Firefox no soportan Web Bluetooth.
 </div>
 
 <button id="connectBtn" class="btn">CONECTAR ESP32</button>
@@ -97,140 +88,268 @@
     <canvas id="chart" height="140"></canvas>
 </div>
 
-<div class="control-group">
-    <span class="control-label">ÁNGULO SERVO (0 – 180°)</span>
+<div class="section">
+    <span class="section-label">CONTROL MANUAL SERVO</span>
     <div class="servo-row">
         <input type="number" id="servoAngle" class="servo-input" value="90" min="0" max="180">
-        <input type="range" id="servoSlider" class="servo-slider" value="90" min="0" max="180">
+        <input type="range" id="servoSlider" class="servo-slider" value="90" min="0" max="180" step="1">
         <button id="sendBtn" class="send-btn">ENVIAR</button>
     </div>
 </div>
 
+<div class="section">
+    <span class="section-label">SECUENCIA AUTOMÁTICA (5 POSICIONES)</span>
+    <div class="col-labels">
+        <div></div>
+        <div class="col-label" style="text-align:left;padding-left:4px">POSICIÓN</div>
+        <div class="col-label">ÁNGULO °</div>
+        <div class="col-label">TIEMPO s</div>
+        <div></div>
+    </div>
+    <div id="steps-container"></div>
+    <button id="addStepBtn" class="btn-small btn-add" style="margin-top:4px;width:100%">+ AGREGAR PASO</button>
+    <div class="progress-wrap"><div class="progress-bar" id="prog-bar"></div></div>
+    <div class="seq-status">
+        <span id="seq-step-info">—</span>
+        <span id="seq-time-info"></span>
+    </div>
+    <div class="btn-row">
+        <button id="runSeqBtn" class="btn-small">EJECUTAR SECUENCIA</button>
+        <button id="stopSeqBtn" class="btn-small btn-stop">DETENER</button>
+    </div>
+</div>
+
 <script>
-    // Busca por UUID del servicio en lugar de nombre — más confiable en Android
-    const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-    const RX_UUID      = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
-    const TX_UUID      = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+const RX_UUID      = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+const TX_UUID      = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
-    let characteristicRX = null;
-    let connected = false;
+let characteristicRX = null;
+let connected = false;
 
-    if (!navigator.bluetooth) {
-        document.getElementById('ble-warning').classList.add('show');
-        document.getElementById('connectBtn').disabled = true;
-    }
+if (!navigator.bluetooth) {
+    document.getElementById('ble-warning').classList.add('show');
+    document.getElementById('connectBtn').disabled = true;
+}
 
-    const ctx = document.getElementById('chart').getContext('2d');
-    const chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: Array(20).fill(''),
-            datasets: [
-                { label: 'Temp (°C)', borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,0.08)', data: [], tension: 0.4, borderWidth: 2, pointRadius: 0, fill: true },
-                { label: 'Pres (hPa)', borderColor: '#00C2FF', backgroundColor: 'rgba(0,194,255,0.06)', data: [], tension: 0.4, borderWidth: 2, pointRadius: 0, fill: true }
-            ]
+const ctx = document.getElementById('chart').getContext('2d');
+const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: Array(20).fill(''),
+        datasets: [
+            { label: 'Temp (°C)', borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,0.08)', data: [], tension: 0.4, borderWidth: 2, pointRadius: 0, fill: true },
+            { label: 'Pres (hPa)', borderColor: '#00C2FF', backgroundColor: 'rgba(0,194,255,0.06)', data: [], tension: 0.4, borderWidth: 2, pointRadius: 0, fill: true }
+        ]
+    },
+    options: {
+        responsive: true, animation: { duration: 200 },
+        scales: {
+            y: { grid: { color: '#1E2235' }, ticks: { color: '#8890A8', font: { size: 10 } } },
+            x: { display: false }
         },
-        options: {
-            responsive: true,
-            animation: { duration: 200 },
-            scales: {
-                y: { grid: { color: '#1E2235' }, ticks: { color: '#8890A8', font: { size: 10 } } },
-                x: { display: false }
-            },
-            plugins: { legend: { labels: { color: '#E8EAF0', font: { size: 11 } } } }
-        }
-    });
-
-    const servoAngle  = document.getElementById('servoAngle');
-    const servoSlider = document.getElementById('servoSlider');
-    servoSlider.addEventListener('input', () => { servoAngle.value = servoSlider.value; });
-    servoAngle.addEventListener('input', () => {
-        let v = Math.min(180, Math.max(0, parseInt(servoAngle.value) || 0));
-        servoSlider.value = v;
-    });
-
-    function setStatus(text, color, dotOn) {
-        document.getElementById('status-text').innerText = text;
-        document.getElementById('status-text').style.color = color;
-        const dot = document.getElementById('dot');
-        dot.style.background = color;
-        dotOn ? dot.classList.add('connected') : dot.classList.remove('connected');
+        plugins: { legend: { labels: { color: '#E8EAF0', font: { size: 11 } } } }
     }
+});
 
-    async function connect() {
-        if (connected) return;
-        const btn = document.getElementById('connectBtn');
-        btn.textContent = 'BUSCANDO...';
-        btn.disabled = true;
+const servoAngle  = document.getElementById('servoAngle');
+const servoSlider = document.getElementById('servoSlider');
+servoSlider.addEventListener('input', () => { servoAngle.value = servoSlider.value; });
+servoAngle.addEventListener('input', () => { servoSlider.value = Math.min(180, Math.max(0, parseInt(servoAngle.value)||0)); });
 
-        try {
-            // Filtra por UUID del servicio — no por nombre
-            const device = await navigator.bluetooth.requestDevice({
-                filters: [{ services: [SERVICE_UUID] }]
-            });
+function setStatus(text, color, dotOn) {
+    document.getElementById('status-text').innerText = text;
+    document.getElementById('status-text').style.color = color;
+    const dot = document.getElementById('dot');
+    dot.style.background = color;
+    dotOn ? dot.classList.add('connected') : dot.classList.remove('connected');
+}
 
-            btn.textContent = 'CONECTANDO...';
-            device.addEventListener('gattserverdisconnected', onDisconnected);
-
-            const server  = await device.gatt.connect();
-            const service = await server.getPrimaryService(SERVICE_UUID);
-            characteristicRX = await service.getCharacteristic(RX_UUID);
-            const characteristicTX = await service.getCharacteristic(TX_UUID);
-
-            await characteristicTX.startNotifications();
-            characteristicTX.addEventListener('characteristicvaluechanged', handleNotifications);
-
-            connected = true;
-            setStatus('CONECTADO', '#00FF9F', true);
-            btn.textContent = 'CONECTADO ✓';
-            btn.style.color = '#00FF9F';
-
-        } catch (error) {
-            console.error("Fallo conexión:", error);
-            setStatus('ERROR', '#FF3860', false);
-            btn.textContent = 'REINTENTAR';
-            btn.disabled = false;
-        }
+async function connect() {
+    if (connected) return;
+    const btn = document.getElementById('connectBtn');
+    btn.textContent = 'BUSCANDO...'; btn.disabled = true;
+    try {
+        const device = await navigator.bluetooth.requestDevice({ filters: [{ services: [SERVICE_UUID] }] });
+        btn.textContent = 'CONECTANDO...';
+        device.addEventListener('gattserverdisconnected', onDisconnected);
+        const server  = await device.gatt.connect();
+        const service = await server.getPrimaryService(SERVICE_UUID);
+        characteristicRX = await service.getCharacteristic(RX_UUID);
+        const characteristicTX = await service.getCharacteristic(TX_UUID);
+        await characteristicTX.startNotifications();
+        characteristicTX.addEventListener('characteristicvaluechanged', handleNotifications);
+        connected = true;
+        setStatus('CONECTADO', '#00FF9F', true);
+        btn.textContent = 'CONECTADO ✓'; btn.style.color = '#00FF9F';
+    } catch (e) {
+        console.error(e);
+        setStatus('ERROR', '#FF3860', false);
+        btn.textContent = 'REINTENTAR'; btn.disabled = false;
     }
+}
 
-    function onDisconnected() {
-        connected = false;
-        characteristicRX = null;
-        setStatus('DESCONECTADO', '#FF3860', false);
-        const btn = document.getElementById('connectBtn');
-        btn.textContent = 'RECONECTAR';
-        btn.style.color = '#00FF9F';
-        btn.disabled = false;
-    }
+function onDisconnected() {
+    connected = false; characteristicRX = null;
+    stopSequence();
+    setStatus('DESCONECTADO', '#FF3860', false);
+    const btn = document.getElementById('connectBtn');
+    btn.textContent = 'RECONECTAR'; btn.style.color = '#00FF9F'; btn.disabled = false;
+}
 
-    function handleNotifications(event) {
-        const value = new TextDecoder().decode(event.target.value);
-        try {
-            const data = JSON.parse(value);
-            if (data.t !== undefined && data.p !== undefined) {
-                document.getElementById('temp-val').innerText = data.t.toFixed(1);
-                document.getElementById('pres-val').innerText = (data.p / 100).toFixed(2);
-                chart.data.datasets[0].data.push(data.t);
-                chart.data.datasets[1].data.push(data.p / 100);
-                if (chart.data.datasets[0].data.length > 20) {
-                    chart.data.datasets[0].data.shift();
-                    chart.data.datasets[1].data.shift();
-                }
-                chart.update();
+function handleNotifications(event) {
+    const value = new TextDecoder().decode(event.target.value);
+    try {
+        const data = JSON.parse(value);
+        if (data.t !== undefined && data.p !== undefined) {
+            document.getElementById('temp-val').innerText = data.t.toFixed(1);
+            document.getElementById('pres-val').innerText = (data.p / 100).toFixed(2);
+            chart.data.datasets[0].data.push(data.t);
+            chart.data.datasets[1].data.push(data.p / 100);
+            if (chart.data.datasets[0].data.length > 20) {
+                chart.data.datasets[0].data.shift();
+                chart.data.datasets[1].data.shift();
             }
-        } catch (e) {}
+            chart.update();
+        }
+    } catch(e){}
+}
+
+async function sendAngle(angle) {
+    if (!characteristicRX) return;
+    angle = Math.min(180, Math.max(0, parseInt(angle)||0));
+    await characteristicRX.writeValue(new TextEncoder().encode("ANGLE:" + angle));
+}
+
+document.getElementById('connectBtn').addEventListener('click', connect);
+document.getElementById('sendBtn').addEventListener('click', () => {
+    const a = Math.min(180, Math.max(0, parseInt(servoAngle.value)||0));
+    servoAngle.value = a; servoSlider.value = a;
+    sendAngle(a);
+});
+
+// ── Secuencia ────────────────────────────────────────────────────────────────
+const defaultSteps = [
+    {name:'Pos 1', angle:0,   time:2},
+    {name:'Pos 2', angle:45,  time:2},
+    {name:'Pos 3', angle:90,  time:2},
+    {name:'Pos 4', angle:135, time:2},
+    {name:'Pos 5', angle:180, time:2},
+];
+
+let seqRunning = false;
+let seqTimeout = null;
+let seqInterval = null;
+
+function getSteps() {
+    const rows = document.querySelectorAll('.step-row');
+    return Array.from(rows).map(r => {
+        const inputs = r.querySelectorAll('input');
+        return {
+            angle: Math.min(180, Math.max(0, parseInt(inputs[0].value)||0)),
+            time:  Math.max(1,  parseInt(inputs[1].value)||1)
+        };
+    });
+}
+
+function renderSteps(steps) {
+    const c = document.getElementById('steps-container');
+    c.innerHTML = '';
+    steps.forEach((s, i) => {
+        const row = document.createElement('div');
+        row.className = 'step-row';
+        row.dataset.index = i;
+        row.innerHTML = `
+            <span class="step-num">${i+1}</span>
+            <span style="font-size:0.75rem;color:var(--accent-pres);padding-left:4px">Pos ${i+1}</span>
+            <input type="number" class="step-input" value="${s.angle}" min="0" max="180" placeholder="0-180">
+            <input type="number" class="step-input" value="${s.time}"  min="1" max="60"  placeholder="seg">
+            <button class="del-btn" onclick="deleteStep(${i})">✕</button>
+        `;
+        c.appendChild(row);
+    });
+}
+
+function deleteStep(i) {
+    const rows = document.querySelectorAll('.step-row');
+    if (rows.length <= 1) return;
+    rows[i].remove();
+    document.querySelectorAll('.step-row').forEach((r, idx) => {
+        r.querySelector('.step-num').textContent = idx + 1;
+        r.querySelector('span:nth-child(2)').textContent = 'Pos ' + (idx+1);
+        r.querySelector('.del-btn').setAttribute('onclick', `deleteStep(${idx})`);
+    });
+}
+
+document.getElementById('addStepBtn').addEventListener('click', () => {
+    const rows = document.querySelectorAll('.step-row');
+    if (rows.length >= 10) return;
+    const i = rows.length;
+    const c = document.getElementById('steps-container');
+    const row = document.createElement('div');
+    row.className = 'step-row';
+    row.innerHTML = `
+        <span class="step-num">${i+1}</span>
+        <span style="font-size:0.75rem;color:var(--accent-pres);padding-left:4px">Pos ${i+1}</span>
+        <input type="number" class="step-input" value="90" min="0" max="180" placeholder="0-180">
+        <input type="number" class="step-input" value="2"  min="1" max="60"  placeholder="seg">
+        <button class="del-btn" onclick="deleteStep(${i})">✕</button>
+    `;
+    c.appendChild(row);
+});
+
+async function runSequence() {
+    if (!connected) { alert('Conecta el ESP32 primero'); return; }
+    seqRunning = true;
+    document.getElementById('runSeqBtn').disabled = true;
+
+    const steps = getSteps();
+    const total = steps.length;
+
+    for (let i = 0; i < total && seqRunning; i++) {
+        const s = steps[i];
+        document.querySelectorAll('.step-row').forEach((r,idx) => r.classList.toggle('active', idx===i));
+        document.getElementById('seq-step-info').textContent = `Paso ${i+1} de ${total} — ${s.angle}°`;
+        await sendAngle(s.angle);
+
+        const ms = s.time * 1000;
+        const start = Date.now();
+        await new Promise(resolve => {
+            seqInterval = setInterval(() => {
+                if (!seqRunning) { clearInterval(seqInterval); resolve(); return; }
+                const elapsed = Date.now() - start;
+                const remaining = Math.max(0, s.time - elapsed/1000);
+                const pct = Math.min(100, (elapsed / ms) * 100);
+                document.getElementById('prog-bar').style.width = pct + '%';
+                document.getElementById('seq-time-info').textContent = remaining.toFixed(1) + 's restantes';
+                if (elapsed >= ms) { clearInterval(seqInterval); resolve(); }
+            }, 100);
+        });
     }
 
-    async function sendAngle() {
-        if (!characteristicRX) return;
-        const angle = Math.min(180, Math.max(0, parseInt(servoAngle.value) || 0));
-        servoAngle.value = angle;
-        servoSlider.value = angle;
-        await characteristicRX.writeValue(new TextEncoder().encode("ANGLE:" + angle));
-    }
+    document.querySelectorAll('.step-row').forEach(r => r.classList.remove('active'));
+    document.getElementById('prog-bar').style.width = seqRunning ? '100%' : '0%';
+    document.getElementById('seq-step-info').textContent = seqRunning ? 'Secuencia completada' : 'Detenido';
+    document.getElementById('seq-time-info').textContent = '';
+    seqRunning = false;
+    document.getElementById('runSeqBtn').disabled = false;
+}
 
-    document.getElementById('connectBtn').addEventListener('click', connect);
-    document.getElementById('sendBtn').addEventListener('click', sendAngle);
+function stopSequence() {
+    seqRunning = false;
+    clearInterval(seqInterval);
+    clearTimeout(seqTimeout);
+    document.querySelectorAll('.step-row').forEach(r => r.classList.remove('active'));
+    document.getElementById('prog-bar').style.width = '0%';
+    document.getElementById('seq-step-info').textContent = 'Detenido';
+    document.getElementById('seq-time-info').textContent = '';
+    document.getElementById('runSeqBtn').disabled = false;
+}
+
+document.getElementById('runSeqBtn').addEventListener('click', runSequence);
+document.getElementById('stopSeqBtn').addEventListener('click', stopSequence);
+
+renderSteps(defaultSteps);
 </script>
 </body>
 </html>
